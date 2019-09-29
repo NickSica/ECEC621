@@ -12,7 +12,7 @@
 // Predictor type
 //#define TWO_BIT_LOCAL
 #define GSHARE
-// #define TOURNAMENT
+//#define TOURNAMENT
 
 
 // saturating counter
