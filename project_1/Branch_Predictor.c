@@ -219,8 +219,9 @@ bool predict(Branch_Predictor *branch_predictor, Instruction *instr)
         decrementCounter(&(branch_predictor->local_counters[local_predictor_idx]));
     }
 
-    // Step six, update global history register
+    // Step six, update and global history register and local history table
     branch_predictor->global_history = branch_predictor->global_history << 1 | instr->taken;
+    branch_predictor->local_history_table[local_history_table_idx] = branch_predictor->local_history_table[local_history_table_idx] << 1 | instr->taken;
     // exit(0);
     //
     return prediction_correct;
