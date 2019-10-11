@@ -10,8 +10,8 @@
 #include "Instruction.h"
 
 // Predictor type
-//#define TWO_BIT_LOCAL
-#define GSHARE
+#define TWO_BIT_LOCAL
+//#define GSHARE
 //#define TOURNAMENT
 
 
