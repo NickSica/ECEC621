@@ -5,7 +5,7 @@ const unsigned instShiftAmt = 2; // Number of bits to shift a PC by
 // You can play around with these settings.
 const unsigned globalPredictorSize = 8192; 
 const unsigned globalCounterBits = 32;                 // Best if from 12-62
-const unsigned perceptronSize = 8192;                  // Can't be same size as globalPredictorsize
+const unsigned perceptronSize = 8192;  
 
 Branch_Predictor *initBranchPredictor()
 {
