@@ -13,6 +13,7 @@
 #include "Request.h"
 
 #define LRU
+//#define LFU
 
 /* Cache */
 typedef struct Set
@@ -50,5 +51,6 @@ Cache_Block *findBlock(Cache *cache, uint64_t addr);
 
 // Replacement Policies
 bool lru(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_addr);
+bool lfu(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_addr);
 
 #endif
