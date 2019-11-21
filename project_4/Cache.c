@@ -3,9 +3,9 @@
 /* Constants */
 const unsigned block_size = 64; // Size of a cache line (in Bytes)
 // TODO, you should try different size of cache, for example, 128KB, 256KB, 512KB, 1MB, 2MB
-const unsigned cache_size = 128; // Size of a cache (in KB)
+const unsigned cache_size = 2048; // Size of a cache (in KB)
 // TODO, you should try different association configurations, for example 4, 8, 16
-const unsigned assoc = 4;
+const unsigned assoc = 8;
 
 Cache *initCache()
 {
@@ -95,16 +95,9 @@ bool accessBlock(Cache *cache, Request *req, uint64_t access_time)
         {
             blk->dirty = true;
         }
-    }
-
-    if(hit)
-    {
+	
 	blk->outcome = true;
 	shct[blk->signature_m]++;
-    }
-    else
-    {
-	blk->outcome = false;
     }
     
     return hit;
@@ -134,7 +127,7 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
 	victim->frequency = 0;
 
     victim->when_touched = access_time;
-
+    
     if (req->req_type == STORE)
     {
         victim->dirty = true;
