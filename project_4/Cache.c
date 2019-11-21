@@ -3,13 +3,17 @@
 /* Constants */
 const unsigned block_size = 64; // Size of a cache line (in Bytes)
 // TODO, you should try different size of cache, for example, 128KB, 256KB, 512KB, 1MB, 2MB
-const unsigned cache_size = 128; // Size of a cache (in KB)
+const unsigned cache_size = 2048; // Size of a cache (in KB)
 // TODO, you should try different association configurations, for example 4, 8, 16
+<<<<<<< HEAD
 const unsigned assoc = 4;
 // Determine how many MSBs of the PC to use for signature_m
 // Note* signature_m takes only 16 bits, any higher order bits remaining
 // after mask conversion are discarded
 const unsigned sig_bits = 18; //Set to values between 18 and 33 inclusive
+=======
+const unsigned assoc = 8;
+>>>>>>> b3895dec372ecc64c27a0e21a950b6e2f3b8e725
 
 Cache *initCache()
 {
@@ -101,10 +105,7 @@ bool accessBlock(Cache *cache, Request *req, uint64_t access_time)
         {
             blk->dirty = true;
         }
-    }
-
-    if(hit)
-    {
+	
 	blk->outcome = true;
 	shct[blk->signature_m]++;
     }
@@ -138,7 +139,7 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
 	victim->frequency = 0;
 
     victim->when_touched = access_time;
-
+    
     if (req->req_type == STORE)
     {
         victim->dirty = true;

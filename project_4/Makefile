@@ -6,7 +6,7 @@ LINK	:= -lm
 all: $(TARGET)
 
 $(TARGET): $(SOURCE)
-	$(CC) -o $(TARGET) $(SOURCE) $(LINK)
+	$(CC) -g -o $(TARGET) $(SOURCE) $(LINK)
 
 clean:
 	rm -f $(TARGET)
