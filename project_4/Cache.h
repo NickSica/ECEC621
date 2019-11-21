@@ -37,12 +37,12 @@ typedef struct Cache
     
 }Cache;
 
-unsigned int shct[]; 
+unsigned int shct[1024]; 
 
 // Function Definitions
 Cache *initCache();
 bool accessBlock(Cache *cache, Request *req, uint64_t access_time);
-bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_addr, unsigned int *shct[]);
+bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_addr);
 
 // Helper Function
 uint64_t blkAlign(uint64_t addr, uint64_t mask);

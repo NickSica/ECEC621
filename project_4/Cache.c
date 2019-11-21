@@ -28,6 +28,8 @@ Cache *initCache()
         cache->blocks[i].dirty = false;
         cache->blocks[i].when_touched = 0;
         cache->blocks[i].frequency = 0;
+	cache->blocks[i].outcome = false;
+	cache->blocks[i].signature_m = 0;
     }
 
     // Initialize Set-way variables
@@ -108,7 +110,7 @@ bool accessBlock(Cache *cache, Request *req, uint64_t access_time)
     return hit;
 }
 
-bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_addr, unsigned int *shct[])
+bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_addr)
 {
     // Step one, find a victim block
     uint64_t blk_aligned_addr = blkAlign(req->load_or_store_addr, cache->blk_mask);
