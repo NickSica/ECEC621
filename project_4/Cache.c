@@ -98,17 +98,11 @@ bool accessBlock(Cache *cache, Request *req, uint64_t access_time)
     if(hit)
     {
 	blk->outcome = true;
-	blk->signature_m = blk->PC & 0xF; 
-	shct[blk->signature_m]++;	
+	shct[blk->signature_m]++;
     }
     else
     {
 	blk->outcome = false;
-	blk->signature_m = blk->PC & 0xF;
-	if(shct[blk->signature_m] == 0)
-	    
-	else
- 
     }
     
     return hit;
@@ -120,17 +114,24 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
     uint64_t blk_aligned_addr = blkAlign(req->load_or_store_addr, cache->blk_mask);
 
     Cache_Block *victim = NULL;
-    bool wb_required = lru(cache, blk_aligned_addr, &victim, wb_addr);
-	
+    bool wb_required = lfu(cache, blk_aligned_addr, &victim, wb_addr);
+ 
     assert(victim != NULL);
+
+    if(!victim->outcome)
+	shct[victim->signature_m]--;
 
     // Step two, insert the new block
     uint64_t tag = req->load_or_store_addr >> cache->tag_shift;
     victim->tag = tag;
     victim->valid = true;
 
+    victim->signature_m = victim->PC & 0xF;
+    
+    if(shct[victim->signature_m] == 0)
+	victim->frequency = 0;
+
     victim->when_touched = access_time;
-    ++victim->frequency;
 
     if (req->req_type == STORE)
     {
@@ -172,7 +173,7 @@ Cache_Block *findBlock(Cache *cache, uint64_t addr)
     return NULL;
 }
 
-bool lru(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_addr)
+bool lfu(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_addr)
 {
     uint64_t set_idx = (addr >> cache->set_shift) & cache->set_mask;
     //    printf("Set: %"PRIu64"\n", set_idx);
@@ -189,20 +190,15 @@ bool lru(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_add
         }
     }
 
-    // Step two, if there is no invalid block. Locate the LRU block
+    // Step two, if there is no invalid block. Locate the LFU block
     Cache_Block *victim = ways[0];
     for (i = 1; i < cache->num_ways; i++)
     {
-        if (ways[i]->when_touched < victim->when_touched)
+        if (ways[i]->frequency < victim->frequency)
         {
             victim = ways[i];
         }
     }
-
-    if(!victim->outcome)
-	shct[victim->signature_m]--;
-
-    
     
     // Step three, need to write-back the victim block
     *wb_addr = (victim->tag << cache->tag_shift) | (victim->set << cache->set_shift);
@@ -213,7 +209,6 @@ bool lru(Cache *cache, uint64_t addr, Cache_Block **victim_blk, uint64_t *wb_add
     victim->tag = UINTMAX_MAX;
     victim->valid = false;
     victim->dirty = false;
-    victim->frequency = 0;
     victim->when_touched = 0;
 
     *victim_blk = victim;

@@ -54,7 +54,6 @@ int main(int argc, const char *argv[])
 
         ++num_of_reqs;
         ++cycles;
-	pc += 4;
     }
 
     double hit_rate = (double)hits / ((double)hits + (double)misses);
