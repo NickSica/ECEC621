@@ -6,12 +6,18 @@ const unsigned block_size = 64; // Size of a cache line (in Bytes)
 const unsigned cache_size = 128; // Size of a cache (in KB)
 // TODO, you should try different association configurations, for example 4, 8, 16
 const unsigned assoc = 4;
+// Determine how many MSBs of the PC to use for signature_m
+// Note* signature_m takes only 16 bits, any higher order bits remaining
+// after mask conversion are discarded
+const unsigned sig_bits = 18; //Set to values between 18 and 33 inclusive
 
 Cache *initCache()
 {
     Cache *cache = (Cache *)malloc(sizeof(Cache));
 
     cache->blk_mask = block_size - 1;
+    cache->sig_mask = ((uint64_t)pow(2,sig_bits))-1 << (64-sig_bits);
+//    printf("Signature Mask: %"PRIu64"\n", cache->sig_mask);
 
     unsigned num_blocks = cache_size * 1024 / block_size;
     cache->num_blocks = num_blocks;
@@ -123,8 +129,10 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
     uint64_t tag = req->load_or_store_addr >> cache->tag_shift;
     victim->tag = tag;
     victim->valid = true;
+    victim->PC = req->PC;
 
-    victim->signature_m = victim->PC & 0xF;
+    victim->signature_m = (victim->PC & cache->sig_mask) >> (64 - sig_bits);
+//    printf("Victim Signature_m: %"PRIu16"\n", victim->signature_m);
     
     if(shct[victim->signature_m] == 0)
 	victim->frequency = 0;

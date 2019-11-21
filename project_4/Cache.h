@@ -12,6 +12,7 @@
 #include "Cache_Blk.h"
 #include "Request.h"
 
+
 /* Cache */
 typedef struct Set
 {
@@ -21,6 +22,7 @@ typedef struct Set
 typedef struct Cache
 {
     uint64_t blk_mask;
+    uint64_t sig_mask;
     unsigned num_blocks;
     
     Cache_Block *blocks; // All cache blocks
@@ -37,7 +39,7 @@ typedef struct Cache
     
 }Cache;
 
-unsigned int shct[1024]; 
+unsigned int shct[65536]; 
 
 // Function Definitions
 Cache *initCache();
