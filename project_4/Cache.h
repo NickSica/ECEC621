@@ -41,7 +41,7 @@ typedef struct Cache
     
 }Cache;
 
-unsigned int shct[65536]; 
+unsigned int shct[UINT32_MAX]; 
 
 // Function Definitions
 Cache *initCache();

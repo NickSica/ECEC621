@@ -3,13 +3,15 @@
 /* Constants */
 const unsigned block_size = 64; // Size of a cache line (in Bytes)
 // TODO, you should try different size of cache, for example, 128KB, 256KB, 512KB, 1MB, 2MB
-const unsigned cache_size = 2048; // Size of a cache (in KB)
+const unsigned cache_size = 128; // Size of a cache (in KB)
 // TODO, you should try different association configurations, for example 4, 8, 16
 const unsigned assoc = 4;
+// The maximum value stored in the SHCT counter per signature_m
+const unsigned shct_sat = 31;
 // Determine how many MSBs of the PC to use for signature_m
 // Note* signature_m takes only 16 bits, any higher order bits remaining
 // after mask conversion are discarded
-const unsigned sig_bits = 18; //Set to values between 18 and 33 inclusive
+const unsigned sig_bits = 18; //Set to values between 18 and 49 inclusive
 
 Cache *initCache()
 {
@@ -103,7 +105,8 @@ bool accessBlock(Cache *cache, Request *req, uint64_t access_time)
         }
 	
 	blk->outcome = true;
-	shct[blk->signature_m]++;
+	if(shct[blk->signature_m] < shct_sat)
+            shct[blk->signature_m]++;
     }
     
     return hit;
@@ -127,6 +130,8 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
 
     if(!victim->outcome)
 	shct[victim->signature_m]--;
+    else
+	victim->outcome = false;
 
     // Step two, insert the new block
     uint64_t tag = req->load_or_store_addr >> cache->tag_shift;
@@ -135,7 +140,7 @@ bool insertBlock(Cache *cache, Request *req, uint64_t access_time, uint64_t *wb_
     victim->PC = req->PC;
 
     victim->signature_m = (victim->PC & cache->sig_mask) >> (64 - sig_bits);
-//    printf("Victim Signature_m: %"PRIu16"\n", victim->signature_m);
+//    printf("Victim Signature_m: %"PRIu64"\n", victim->signature_m);
     
     #ifdef LFU
     if(shct[victim->signature_m] == 0)
