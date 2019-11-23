@@ -11,14 +11,22 @@ const unsigned shct_sat = 31;
 // Determine how many MSBs of the PC to use for signature_m
 // Note* signature_m takes only 16 bits, any higher order bits remaining
 // after mask conversion are discarded
-const unsigned sig_bits = 18; //Set to values between 18 and 49 inclusive
+const unsigned sig_bits = 64; //Set to values between 18 and 64 inclusive
 
 Cache *initCache()
 {
     Cache *cache = (Cache *)malloc(sizeof(Cache));
 
     cache->blk_mask = block_size - 1;
-    cache->sig_mask = ((uint64_t)pow(2,sig_bits))-1 << (64-sig_bits);
+    if (sig_bits > 49)
+    {
+	cache->sig_mask = ((uint64_t)pow(2,32))-1 << (64-sig_bits);
+    }
+    else
+    {
+    	cache->sig_mask = ((uint64_t)pow(2,sig_bits))-1 << (64-sig_bits);
+    }
+
 //    printf("Signature Mask: %"PRIu64"\n", cache->sig_mask);
 
     unsigned num_blocks = cache_size * 1024 / block_size;
