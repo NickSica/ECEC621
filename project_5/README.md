@@ -1,1 +1,1 @@
-# DRAM/Out of Order Execution
+# Memory Controller
