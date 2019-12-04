@@ -48,7 +48,7 @@ int main(int argc, const char *argv[])
         ++cycles;
     }
     #ifdef FCFS
-    printf("Controller Memory Conflicts: %u64d\n", controller->mem_conflicts);
+    printf("Controller Memory Conflicts: %lu64\n", controller->mem_conflicts);
     #endif
 	
     free(controller->bank_status);
